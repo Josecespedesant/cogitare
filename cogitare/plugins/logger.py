@@ -39,7 +39,8 @@ class Logger(PluginInterface):
         model.register_plugin(logger2, 'on_end_batch')
     """
 
-    def __init__(self, title='[Logger]', msg='Loss: {loss_mean:.6f}', show_time=True, output_file=None, freq=1):
+    def __init__(self, title='[Logger]', msg='Loss: {loss_mean:.6f}', show_time=True, output_file=None, freq=1,
+                 csv=False):
         super(Logger, self).__init__(freq=freq)
 
         self.title = title
@@ -48,7 +49,9 @@ class Logger(PluginInterface):
         self.output_file = output_file
         self.logger = logging.getLogger(title)
         coloredlogs.install(level='DEBUG', logger=self.logger)
-
+        self.separator = '| '
+        if csv:
+            self.separator = ', '
         if show_time:
             self._start_time = time.time()
 
@@ -61,7 +64,7 @@ class Logger(PluginInterface):
         time_str = ' '.join('{} {}'.format(getattr(seconds, k), k) for k in intervals
                             if getattr(seconds, k))
 
-        return '| ' + time_str
+        return self.separator + time_str
 
     def function(self, *args, **kwargs):
         log = '%s %s %s' % (self.title, self.msg.format(**kwargs), self._time_spent())

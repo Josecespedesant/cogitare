@@ -37,3 +37,14 @@ def test_logger_with_tqdm(capsys):
     l(loss_mean=1.0)
     out, err = capsys.readouterr()
     assert '[Logger] Loss: 1.000000 ' in err
+
+
+def test_logger_file_csv_format(capsys):
+    f = mock.Mock()
+    f.write = mock.MagicMock(return_value=None)
+
+    l = Logger(output_file=f, csv=True)
+    l(loss_mean=1.0)
+    out, err = capsys.readouterr()
+    assert f.write.called
+    assert ', ' in err
